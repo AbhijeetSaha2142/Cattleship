@@ -1,4 +1,4 @@
-# Cattleship
+# Cattleship :cow2:
 ## Period 10: Abhijeet Saha, Steven Lee, Kristoff Misquitta
 ### Description
 Farmer David and Farmer Jun are missing their cattle! Luckily, they’re on the other’s farms, hiding in the tall grass. Help your farmer secure their cows first!
