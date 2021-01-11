@@ -15,7 +15,7 @@ To initialize the server and client, the handshake method is used (which works w
 
 The first player client receives their array (their board), and displays it. Another board displays their hits and misses. Then, it will prompt the user to make a move. The user types in an alphanumeric number (e.g. A1) and that number is sent to the server through a pipe. The server applies that move to the second player’s board, and if player 1 makes a hit, then the player makes another move. Otherwise, it sends the arrays to the player 2 client and asks player 2 to make a move. When a player is making a move, the other player’s terminal is cleared using a fork and exec clear. 
 
-The game will stop either when one player wins, or when one player does ctrl-c. Using ctrl-c will send a signal to the server, then sends a message to the other player that the player has quit. Then the other player’s client exits. 
+The game will stop either when one player wins, or when one player does ctrl-c. Using ctrl-c will exit the program and (before exiting) send a signal to the server, which then sends a message to the other player that the player has quit. Then the other player’s client exits. 
 
 There are three parts to this project: client, server, and algorithm. Abhijeet will work on the algorithm that creates the boards and determines game logic. Steven will work on the server component. Kristoff will work on the client component. 
 ### Timeline
