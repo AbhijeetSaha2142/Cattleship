@@ -20,6 +20,9 @@ The game will stop either when one player wins, or when one player does ctrl-c. 
 There are three parts to this project: client, server, and algorithm. Abhijeet will work on the algorithm that creates the boards and determines game logic. Steven will work on the server component. Kristoff will work on the client component. 
 ### Timeline
 1/13 - Client is able to display sample boards.
+
 1/15 - Algorithm developed and working, able to create randomized boards.
+
 1/19 - 2 Clients and Server are able to handshake and execute game logic.
+
 1/21 - Finished project, with most bugs fixed.
