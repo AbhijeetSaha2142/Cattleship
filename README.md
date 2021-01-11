@@ -5,7 +5,7 @@ Farmer David and Farmer Jun are missing their cattle! Luckily, they’re on the 
 
 A Battleship clone. Cows (not battleships because that is too violent) of different lengths (5x1, 4x1, 3x1, 3x1, 2x1) are placed on farms (10x10 alphanumeric grid). Each farmer guesses where on the board their cattle is. If they hit their cattle, they are given another turn. Otherwise, it goes to the next player. The winner is the one who finds all of their cattle first. 
 
-Inspiration: http://en.battleship-game.org/id37867548/classic
+Inspiration: http://en.battleship-game.org/
 ### User Interface
 At the beginning each player is shown two boards: their board with randomly placed cows of varying length, either horizontally or vertically and nonadjacent, and the enemy board where they guess the square that might. If they guess correctly they are able to guess again until they get it wrong or find all cows. After they are done guessing their interface is cleared so that the other player doesn’t see it in their peripheral. Your own board is updated to show the places searched by the other player, as is the enemy board for the places searched by you. The game will end when either player wins or one of them uses ctrl-c, which is counted as a forfeit making the other player win automatically.
 ### Design
