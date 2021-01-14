@@ -206,16 +206,94 @@ char **generate()
     return board;
 }
 
-int main()
+int check(char **board)
 {
-    char **test = generate();
+    int count; 
+    for (int i = 0; i < 10; ++i)
+    {
+        for (int j = 0; j < 10; ++j)
+        {
+            if (board[i][j] == 'X') count++;    
+        }
+    }
+    return count; 
+}
+
+void print_board(char **board) 
+{
     for (int i = 0; i < 10; ++i)
     {
         printf("|");
         for (int j = 0; j < 10; ++j)
         {
-            printf("%c|", test[i][j]);
+            printf("%c|", board[i][j]);
         }
         printf("\n");
     }
+}
+
+int error_message(int a)
+{
+    if (a == -1) {
+        printf("errno: %d\terror: %s\n", errno, strerror(errno));
+        return -1; 
+    }
+}
+
+int main()
+{
+    // PLAYER 1
+    mkfifo("hub1", 0666); 
+    int server1 = open("hub1", O_RDONLY);
+    error_message(server1);
+    char pid1[100];
+    
+    int r1 = read(server1, pid1, sizeof(pid1));
+    error_message(r1);
+    printf("Message received from %s (Player 1).\n Sending message to Player 1...\n", pid1);
+
+    int client1 = open(pid1, O_WRONLY);
+    error_message(client1); 
+
+    char ack1[] = "Player 1";
+    int w1 = write(client1, ack1, sizeof(ack1));
+    error_message(w1);
+
+    remove("hub1");
+
+    char acks1[100];
+    int back1 = read(server1, acks1, sizeof(acks1));
+    error_message(back1); 
+    printf("Message received from Player 1. Handshake complete.\n"); 
+
+    // PLAYER 2
+    mkfifo("hub2", 0666);
+    int server2 = open("hub2", O_RDONLY); 
+    error_message(server2);
+    char pid2[100];
+
+    int r2 = read(server2, pid2, sizeof(pid2));
+    error_message(r2);
+    printf("Message received from %s (Player 2).\n Sending message to Player 2...\n", pid2);
+
+    int client2 = open(pid2, O_WRONLY);
+    error_message(client2); 
+
+    char ack2[] = "Player 2";
+    int w2 = write(client2, ack2, sizeof(ack2));
+    error_message(w2);
+
+    remove("hub2");
+
+    char acks2[100];
+    int back2 = read(server2, acks2, sizeof(acks2));
+    error_message(back2); 
+    printf("Message received from Player 2. Handshake complete.\n"); 
+
+    // Player 1: server1 (input), client1 (output)
+    // Player 2: server2 (input), client2 (output)
+
+    char ** board1 = generate(); 
+    char ** board2 = generate();
+      
 }
