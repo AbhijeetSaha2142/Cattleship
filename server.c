@@ -253,9 +253,9 @@ char *flatten(char **board)
 
 int strike(char **board, char *move)
 {
-    int alpha = (int) (move[0] - 41); 
-    int num = (int) (move[1] - 30); 
-
+    int alpha = (int) (move[0] - 'A'); 
+    int num = (int) (move[1] - '1'); 
+    printf("hiaa\n");
     if(board[num][alpha] == 'X')
     {
         board[num][alpha] = ' ';
@@ -265,7 +265,9 @@ int strike(char **board, char *move)
 }
 
 int main()
-{
+{   
+    printf("\n       _____      _   _   _           _     _        \n      / ____|    | | | | | |         | |   (_)       \n     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   \n     | |    / _` | __| __| |/ _ \\/ __| '_ \\| | '_ \\  \n     | |___| (_| | |_| |_| |  __/\\__ \\ | | | | |_) | \n      \\_____\\__,_|\\__|\\__|_|\\___||___/_| |_|_| .__/  \n                                             | |     \n                                             |_|     server\n");
+
     // PLAYER 1
     mkfifo("hub1", 0666); 
     int server1 = open("hub1", O_RDONLY);
@@ -328,42 +330,46 @@ int main()
         char move2[] = "A1";
         if (turn == 0)
         {
-            char *flatboard = flatten(board1);
-            int p1 = write(client1, flatboard, sizeof(flatboard)); // GO Player 1 
-            error_message(p1);
-
             int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
             error_message(p2);
 
+            char *flatboard1 = flatten(board1);
+            int p1 = write(client1, flatboard1, strlen(flatboard1) + 1); // GO Player 1 
+            error_message(p1);
+            
             int m1 = read(server1, move1, sizeof(move1));
             error_message(m1);
-
+            
             if(!strike(board2, move1))
             {
                 turn = 1;
             }
 
+            printf("done\n");
             if(check(board2) == 0)
             {
                 // player 1 wins
             }
         } 
-        if (turn == 1)
+        else if (turn == 1)
         {
-            char *flatboard = flatten(board2);
-            int p2 = write(client1, flatboard, sizeof(flatboard)); // GO Player 2 
-            error_message(p2);
-
-            int p1 = write(client2, stop, sizeof(stop)); // STOP Player 1
+            int p1 = write(client1, stop, sizeof(stop)); // STOP Player 1
             error_message(p1);
 
-            int m2 = read(server1, move2, sizeof(move2));
+            char *flatboard2 = flatten(board2);
+            int p2 = write(client2, flatboard2, strlen(flatboard2)+1); // GO Player 2 
+            error_message(p2);
+
+            
+
+            int m2 = read(server2, move2, sizeof(move2));
             error_message(m2);
 
             if(!strike(board1, move2))
             {
                 turn = 0;
             }
+            
 
             if(check(board1) == 0)
             {

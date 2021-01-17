@@ -20,14 +20,14 @@
  *                                             |_|     
  */
 
-void print_board(char **board) 
+void print_board(char *flatboard) 
 {
     for (int i = 0; i < 10; ++i)
     {
         printf("|");
         for (int j = 0; j < 10; ++j)
         {
-            printf("%c|", board[i][j]);
+            printf("%c|", flatboard[10*i + j]);
         }
         printf("\n");
     }
@@ -39,21 +39,6 @@ int error_message(int a)
         printf("errno: %d\terror: %s\n", errno, strerror(errno));
         return -1; 
     }
-}
-
-char ** deflatten(char *flat)
-{
-    char **board = malloc(10 * sizeof(char *));
-
-    for (int i = 0; i < 10; ++i)
-    {
-        for (int j = 0; j < 10; ++j)
-        {
-            board[i][j] = flat[10 * i + j]; 
-        } 
-    }
-
-    return board;
 }
 
 int main()
@@ -96,7 +81,7 @@ int main()
     printf("Handshake complete.\n");
 
     // removes private pipe
-    //remove(buffer);
+    remove(buffer);
 
     // server (output), client (input)
     char userinput[100];
@@ -106,6 +91,7 @@ int main()
         
         int info = read(client, board, sizeof(board));
         error_message(info);
+        printf("data: %s\n", board);
 
         if (strcmp(board, "STOP") == 0)
         {
@@ -113,7 +99,7 @@ int main()
         }
         else
         {
-            print_board(deflatten(board));
+            print_board(board);
             printf("Enter move: ");
             fgets(userinput, sizeof(userinput), stdin);
             if(isspace(userinput[strlen(userinput) - 1])) userinput[strlen(userinput) - 1] = '\0';
