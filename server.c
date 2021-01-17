@@ -137,8 +137,6 @@ int valid(char **board, int x, int y, int dir, int length)
 
 char **generate()
 {
-    srand(time(NULL));
-
     char **board = malloc(10 * sizeof(char *));
 
     for (int i = 0; i < 10; i++)
@@ -254,7 +252,7 @@ char *flatten(char **board)
 int strike(char **board, char *move)
 {
     int alpha = (int) (move[0] - 'A'); 
-    int num = (int) (move[1] - '1'); 
+    int num = (int) (move[1] - '0'); 
     printf("hiaa\n");
     if(board[num][alpha] == 'X')
     {
@@ -266,6 +264,7 @@ int strike(char **board, char *move)
 
 int main()
 {   
+    srand(time(NULL));
     printf("\n       _____      _   _   _           _     _        \n      / ____|    | | | | | |         | |   (_)       \n     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   \n     | |    / _` | __| __| |/ _ \\/ __| '_ \\| | '_ \\  \n     | |___| (_| | |_| |_| |  __/\\__ \\ | | | | |_) | \n      \\_____\\__,_|\\__|\\__|_|\\___||___/_| |_|_| .__/  \n                                             | |     \n                                             |_|     server\n");
 
     // PLAYER 1
@@ -326,8 +325,8 @@ int main()
     char stop[] = "STOP";
     while(1)
     {
-        char move1[] = "A1";
-        char move2[] = "A1";
+        char move1[] = "A0";
+        char move2[] = "A0";
         if (turn == 0)
         {
             int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
