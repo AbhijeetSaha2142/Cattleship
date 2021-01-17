@@ -240,6 +240,30 @@ int error_message(int a)
     }
 }
 
+char *flatten(char **board)
+{
+    char *out = malloc(101 * sizeof(char));
+    for(int i = 0; i < 10; ++i)
+    {
+        strcat(out, board[i]);
+    } 
+    out[100] = '\0';
+    return out;
+}
+
+int strike(char **board, char *move)
+{
+    int alpha = (int) (move[0] - 41); 
+    int num = (int) (move[1] - 30); 
+
+    if(board[num][alpha] == 'X')
+    {
+        board[num][alpha] = ' ';
+        return 1; 
+    }
+    return 0;
+}
+
 int main()
 {
     // PLAYER 1
@@ -295,5 +319,58 @@ int main()
 
     char ** board1 = generate(); 
     char ** board2 = generate();
+
+    int turn = 0; // 0 is Player 1, 1 is Player 2
+    char stop[] = "STOP";
+    while(1)
+    {
+        char move1[] = "A1";
+        char move2[] = "A1";
+        if (turn == 0)
+        {
+            char *flatboard = flatten(board1);
+            int p1 = write(client1, flatboard, sizeof(flatboard)); // GO Player 1 
+            error_message(p1);
+
+            int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
+            error_message(p2);
+
+            int m1 = read(server1, move1, sizeof(move1));
+            error_message(m1);
+
+            if(!strike(board2, move1))
+            {
+                turn = 1;
+            }
+
+            if(check(board2) == 0)
+            {
+                // player 1 wins
+            }
+        } 
+        if (turn == 1)
+        {
+            char *flatboard = flatten(board2);
+            int p2 = write(client1, flatboard, sizeof(flatboard)); // GO Player 2 
+            error_message(p2);
+
+            int p1 = write(client2, stop, sizeof(stop)); // STOP Player 1
+            error_message(p1);
+
+            int m2 = read(server1, move2, sizeof(move2));
+            error_message(m2);
+
+            if(!strike(board1, move2))
+            {
+                turn = 0;
+            }
+
+            if(check(board1) == 0)
+            {
+                // player 2 wins
+            }
+        }
+
+    } 
       
 }

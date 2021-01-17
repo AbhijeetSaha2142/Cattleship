@@ -9,6 +9,17 @@
 #include <ctype.h>
 #include <signal.h>
 
+/***
+ *       _____      _   _   _           _     _        
+ *      / ____|    | | | | | |         | |   (_)       
+ *     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   
+ *     | |    / _` | __| __| |/ _ \/ __| '_ \| | '_ \  
+ *     | |___| (_| | |_| |_| |  __/\__ \ | | | | |_) | 
+ *      \_____\__,_|\__|\__|_|\___||___/_| |_|_| .__/  
+ *                                             | |     
+ *                                             |_|     
+ */
+
 void print_board(char **board) 
 {
     for (int i = 0; i < 10; ++i)
@@ -30,8 +41,24 @@ int error_message(int a)
     }
 }
 
+char ** deflatten(char *flat)
+{
+    char **board = malloc(10 * sizeof(char *));
+
+    for (int i = 0; i < 10; ++i)
+    {
+        for (int j = 0; j < 10; ++j)
+        {
+            board[i][j] = flat[10 * i + j]; 
+        } 
+    }
+
+    return board;
+}
+
 int main()
 {   
+    printf("\n       _____      _   _   _           _     _        \n      / ____|    | | | | | |         | |   (_)       \n     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   \n     | |    / _` | __| __| |/ _ \\/ __| '_ \\| | '_ \\  \n     | |___| (_| | |_| |_| |  __/\\__ \\ | | | | |_) | \n      \\_____\\__,_|\\__|\\__|_|\\___||___/_| |_|_| .__/  \n                                             | |     \n                                             |_|     \n");
     // creates private pipe
     char buffer[100]; 
     sprintf(buffer, "%d", getpid());
@@ -66,8 +93,33 @@ int main()
     int message2 = write(server, buffer, strlen(buffer) + 1); 
     error_message(message2);
 
+    printf("Handshake complete.\n");
+
     // removes private pipe
-    remove(buffer);
+    //remove(buffer);
 
     // server (output), client (input)
+    char userinput[100];
+    char board[150];
+    while(1)
+    {
+        
+        int info = read(client, board, sizeof(board));
+        error_message(info);
+
+        if (strcmp(board, "STOP") == 0)
+        {
+
+        }
+        else
+        {
+            print_board(deflatten(board));
+            printf("Enter move: ");
+            fgets(userinput, sizeof(userinput), stdin);
+            if(isspace(userinput[strlen(userinput) - 1])) userinput[strlen(userinput) - 1] = '\0';
+
+            int m = write(server, &userinput, sizeof(userinput));
+            error_message(m);
+        }
+    }
 }
