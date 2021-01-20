@@ -206,22 +206,24 @@ char **generate()
 
 int check(char **board)
 {
-    int count = 0; 
+    int count = 0;
     for (int i = 0; i < 10; ++i)
     {
         for (int j = 0; j < 10; ++j)
         {
-            if (board[i][j] == 'X') count++;    
+            if (board[i][j] == 'X') count++;
         }
     }
-    return count; 
+    return count;
 }
 
-void print_board(char **board) 
+void print_board(char **board)
 {
+    printf("    A B C D E F G H I J\n");
+    printf("    _ _ _ _ _ _ _ _ _ _\n");
     for (int i = 0; i < 10; ++i)
     {
-        printf("|");
+        printf("%d  |", i);
         for (int j = 0; j < 10; ++j)
         {
             printf("%c|", board[i][j]);
@@ -234,7 +236,7 @@ int error_message(int a)
 {
     if (a == -1) {
         printf("errno: %d\terror: %s\n", errno, strerror(errno));
-        return -1; 
+        return -1;
     }
 }
 
@@ -244,41 +246,41 @@ char *flatten(char **board)
     for(int i = 0; i < 10; ++i)
     {
         strcat(out, board[i]);
-    } 
+    }
     out[100] = '\0';
     return out;
 }
 
 int strike(char **board, char *move)
 {
-    int alpha = (int) (move[0] - 'A'); 
-    int num = (int) (move[1] - '0'); 
+    int alpha = (int) (move[0] - 'A');
+    int num = (int) (move[1] - '0');
     printf("hiaa\n");
     if(board[num][alpha] == 'X')
     {
         board[num][alpha] = ' ';
-        return 1; 
+        return 1;
     }
     return 0;
 }
 
 int main()
-{   
+{
     srand(time(NULL));
     printf("\n       _____      _   _   _           _     _        \n      / ____|    | | | | | |         | |   (_)       \n     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   \n     | |    / _` | __| __| |/ _ \\/ __| '_ \\| | '_ \\  \n     | |___| (_| | |_| |_| |  __/\\__ \\ | | | | |_) | \n      \\_____\\__,_|\\__|\\__|_|\\___||___/_| |_|_| .__/  \n                                             | |     \n                                             |_|     server\n");
 
     // PLAYER 1
-    mkfifo("hub1", 0666); 
+    mkfifo("hub1", 0666);
     int server1 = open("hub1", O_RDONLY);
     error_message(server1);
     char pid1[100];
-    
+
     int r1 = read(server1, pid1, sizeof(pid1));
     error_message(r1);
     printf("Message received from %s (Player 1).\n Sending message to Player 1...\n", pid1);
 
     int client1 = open(pid1, O_WRONLY);
-    error_message(client1); 
+    error_message(client1);
 
     char ack1[] = "Player 1";
     int w1 = write(client1, ack1, sizeof(ack1));
@@ -288,12 +290,12 @@ int main()
 
     char acks1[100];
     int back1 = read(server1, acks1, sizeof(acks1));
-    error_message(back1); 
-    printf("Message received from Player 1. Handshake complete.\n"); 
+    error_message(back1);
+    printf("Message received from Player 1. Handshake complete.\n");
 
     // PLAYER 2
     mkfifo("hub2", 0666);
-    int server2 = open("hub2", O_RDONLY); 
+    int server2 = open("hub2", O_RDONLY);
     error_message(server2);
     char pid2[100];
 
@@ -302,7 +304,7 @@ int main()
     printf("Message received from %s (Player 2).\n Sending message to Player 2...\n", pid2);
 
     int client2 = open(pid2, O_WRONLY);
-    error_message(client2); 
+    error_message(client2);
 
     char ack2[] = "Player 2";
     int w2 = write(client2, ack2, sizeof(ack2));
@@ -312,13 +314,13 @@ int main()
 
     char acks2[100];
     int back2 = read(server2, acks2, sizeof(acks2));
-    error_message(back2); 
-    printf("Message received from Player 2. Handshake complete.\n"); 
+    error_message(back2);
+    printf("Message received from Player 2. Handshake complete.\n");
 
     // Player 1: server1 (input), client1 (output)
     // Player 2: server2 (input), client2 (output)
 
-    char ** board1 = generate(); 
+    char ** board1 = generate();
     char ** board2 = generate();
 
     int turn = 0; // 0 is Player 1, 1 is Player 2
@@ -333,12 +335,12 @@ int main()
             error_message(p2);
 
             char *flatboard1 = flatten(board1);
-            int p1 = write(client1, flatboard1, strlen(flatboard1) + 1); // GO Player 1 
+            int p1 = write(client1, flatboard1, strlen(flatboard1) + 1); // GO Player 1
             error_message(p1);
-            
+
             int m1 = read(server1, move1, sizeof(move1));
             error_message(m1);
-            
+
             if(!strike(board2, move1))
             {
                 turn = 1;
@@ -349,17 +351,17 @@ int main()
             {
                 // player 1 wins
             }
-        } 
+        }
         else if (turn == 1)
         {
             int p1 = write(client1, stop, sizeof(stop)); // STOP Player 1
             error_message(p1);
 
             char *flatboard2 = flatten(board2);
-            int p2 = write(client2, flatboard2, strlen(flatboard2)+1); // GO Player 2 
+            int p2 = write(client2, flatboard2, strlen(flatboard2)+1); // GO Player 2
             error_message(p2);
 
-            
+
 
             int m2 = read(server2, move2, sizeof(move2));
             error_message(m2);
@@ -368,7 +370,7 @@ int main()
             {
                 turn = 0;
             }
-            
+
 
             if(check(board1) == 0)
             {
@@ -376,6 +378,6 @@ int main()
             }
         }
 
-    } 
-      
+    }
+
 }
