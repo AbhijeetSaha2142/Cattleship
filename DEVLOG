@@ -1,7 +1,7 @@
 2021-1-11 Steven Lee
   + server and client file
 2021-1-13 Abhijeet Saha 
-  + algorithm for board generation
+  + algorithm for randomized board generation
 2021-1-13 Steven Lee
   + client can now handshake with server through pipes
 2021-1-16 Steven Lee
@@ -12,5 +12,6 @@
   + server is able to send client a board, and client is able to display it correctly.
   ! after the second turn the server segfaults
 2021-1-17 Abhijeet Saha
-  + 
+  + fixed check function so two players are able to now send moves
+  ! both players are able to play at the same time, need to stop one of them
  
