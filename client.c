@@ -86,7 +86,7 @@ int main()
     remove(buffer);
 
     // server (output), client (input)
-    char userinput[100];
+    char userinput[10];
     char board[150];
     while(1)
     {
@@ -104,10 +104,13 @@ int main()
             print_board(board);
             printf("Enter move: ");
             fgets(userinput, sizeof(userinput), stdin);
-            if(isspace(userinput[strlen(userinput) - 1])) userinput[strlen(userinput) - 1] = '\0';
-
+            *(strchr(userinput, '\n')) = '\0';
+            printf("userinput: .%s.\n", userinput);
             int m = write(server, &userinput, sizeof(userinput));
             error_message(m);
+            int f = fflush(stdin);
+            error_message(f);
+            
         }
     }
 }

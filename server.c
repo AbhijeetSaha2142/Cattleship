@@ -251,14 +251,14 @@ char *flatten(char **board)
     return out;
 }
 
-int strike(char **board, char *move)
+int strike(char *flatboard, char *move)
 {
     int alpha = (int) (move[0] - 'A');
     int num = (int) (move[1] - '0');
     printf("hiaa\n");
-    if(board[num][alpha] == 'X')
+    if(flatboard[10 * num + alpha] == 'X')
     {
-        board[num][alpha] = ' ';
+        flatboard[10 * num + alpha] = ' ';
         return 1;
     }
     return 0;
@@ -323,30 +323,32 @@ int main()
     char ** board1 = generate();
     char ** board2 = generate();
 
+    char *flatboard1 = flatten(board1);
+    char *flatboard2 = flatten(board2);
+
     int turn = 0; // 0 is Player 1, 1 is Player 2
     char stop[] = "STOP";
     while(1)
     {
-        char move1[] = "A0";
-        char move2[] = "A0";
         if (turn == 0)
         {
+            char move1[10];  
             int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
             error_message(p2);
 
-            char *flatboard1 = flatten(board1);
+            
             int p1 = write(client1, flatboard1, strlen(flatboard1) + 1); // GO Player 1
             error_message(p1);
 
             int m1 = read(server1, move1, sizeof(move1));
             error_message(m1);
 
-            if(!strike(board2, move1))
+            if(!strike(flatboard2, move1))
             {
                 turn = 1;
             }
 
-            printf("done\n");
+            printf("Player 1 moved: '%s', turn: %d, m1: %d\n", move1, turn, m1);
             if(check(board2) == 0)
             {
                 // player 1 wins
@@ -354,24 +356,22 @@ int main()
         }
         else if (turn == 1)
         {
+            char move2[10];
             int p1 = write(client1, stop, sizeof(stop)); // STOP Player 1
             error_message(p1);
 
-            char *flatboard2 = flatten(board2);
             int p2 = write(client2, flatboard2, strlen(flatboard2)+1); // GO Player 2
             error_message(p2);
 
-
-
             int m2 = read(server2, move2, sizeof(move2));
             error_message(m2);
-
-            if(!strike(board1, move2))
+            
+            if(!strike(flatboard1, move2))
             {
                 turn = 0;
             }
 
-
+            printf("Player 2 moved: '%s', turn: %d, m2: %d\n", move2, turn, m2);
             if(check(board1) == 0)
             {
                 // player 2 wins
