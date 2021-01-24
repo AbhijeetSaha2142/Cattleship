@@ -9,9 +9,13 @@
   + implemented game logic (turns, sending message to client)
   ! server and client segfaults (fixed)
 2021-1-17 Steven Lee
-  + server is able to send client a board, and client is able to display it correctly.
-  ! after the second turn the server segfaults
+  + server is able to send client a board, and client is able to display it.
+  ! after the second turn the server segfaults (fixed)
 2021-1-17 Abhijeet Saha
   + fixed check function so two players are able to now send moves
-  ! both players are able to play at the same time, need to stop one of them
+  ! both players are able to play at the same time, need to stop one of them (fixed)
+2021-1-22 Kristoff Misquitta
+  + Made board display correctly on client (A-J, 0-9)
+2021-1-22 Steven Lee, Abhijeet Saha
+  + fixed bug with client reading moves
  
