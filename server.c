@@ -204,14 +204,14 @@ char **generate()
     return board;
 }
 
-int check(char **board)
+int check(char *flatboard)
 {
     int count = 0;
     for (int i = 0; i < 10; ++i)
     {
         for (int j = 0; j < 10; ++j)
         {
-            if (board[i][j] == 'X') count++;
+            if (flatboard[10*i + j] == 'X') count++;
         }
     }
     return count;
@@ -255,10 +255,9 @@ int strike(char *flatboard, char *move)
 {
     int alpha = (int) (move[0] - 'A');
     int num = (int) (move[1] - '0');
-    printf("hiaa\n");
     if(flatboard[10 * num + alpha] == 'X')
     {
-        flatboard[10 * num + alpha] = ' ';
+        flatboard[10 * num + alpha] = 'O';
         return 1;
     }
     return 0;
@@ -315,7 +314,7 @@ int main()
     char acks2[100];
     int back2 = read(server2, acks2, sizeof(acks2));
     error_message(back2);
-    printf("Message received from Player 2. Handshake complete.\n");
+    printf("Message received from Player 2. Handshake complete.\n\n");
 
     // Player 1: server1 (input), client1 (output)
     // Player 2: server2 (input), client2 (output)
@@ -328,6 +327,8 @@ int main()
 
     int turn = 0; // 0 is Player 1, 1 is Player 2
     char stop[] = "STOP";
+    char win[] = "WIN";
+    char lose[] = "LOSE";
     while(1)
     {
         if (turn == 0)
@@ -336,7 +337,6 @@ int main()
             int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
             error_message(p2);
 
-            
             int p1 = write(client1, flatboard1, strlen(flatboard1) + 1); // GO Player 1
             error_message(p1);
 
@@ -349,9 +349,15 @@ int main()
             }
 
             printf("Player 1 moved: '%s', turn: %d, m1: %d\n", move1, turn, m1);
-            if(check(board2) == 0)
+            if(check(flatboard2) == 0)
             {
-                // player 1 wins
+                int p2l = write(client2, lose, sizeof(lose)); // LOSE Player 2
+                error_message(p2);
+
+                int p1w = write(client1, win, sizeof(win)); // WIN Player 1
+                error_message(p1);  
+                printf("Player 1 wins!\n");
+                break; 
             }
         }
         else if (turn == 1)
@@ -372,9 +378,15 @@ int main()
             }
 
             printf("Player 2 moved: '%s', turn: %d, m2: %d\n", move2, turn, m2);
-            if(check(board1) == 0)
+            if(check(flatboard1) == 0)
             {
-                // player 2 wins
+                int p1l = write(client1, lose, sizeof(lose)); // LOSE Player 2
+                error_message(p1);
+
+                int p2w = write(client2, win, sizeof(win)); // WIN Player 1
+                error_message(p2);  
+                printf("Player 2 wins!\n");
+                break; 
             }
         }
 

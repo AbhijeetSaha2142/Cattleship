@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <ctype.h>
 #include <signal.h>
 
@@ -23,7 +24,7 @@
 void print_board(char *flatboard)
 {
     printf("    A B C D E F G H I J\n");
-    printf("    _ _ _ _ _ _ _ _ _ _\n");
+    //printf("    _ _ _ _ _ _ _ _ _ _\n");
     for (int i = 0; i < 10; ++i)
     {
         printf("%d  |", i);
@@ -35,6 +36,12 @@ void print_board(char *flatboard)
     }
 }
 
+int valid_input(char *userinput)
+{
+    if(userinput[0] <= 'Z' && userinput[0] >= 'A' && userinput[1] >= '0' && userinput[1] <= '9') return 1; 
+    return 0;
+}
+
 int error_message(int a)
 {
     if (a == -1) {
@@ -42,6 +49,27 @@ int error_message(int a)
         return -1;
     }
 }
+
+void clear_screen()
+{
+    int f;
+    f = fork();
+    if (f)
+    {
+        int status;
+        int pid= wait(&status);
+        
+    }
+    else
+    {
+        char *args[] = {"clear", NULL};
+        int k = execvp(args[0], args);
+        error_message(k);
+        kill(getpid(), SIGKILL);
+    }
+    printf("\n");
+}
+
 
 int main()
 {
@@ -93,19 +121,58 @@ int main()
 
         int info = read(client, board, sizeof(board));
         error_message(info);
-        printf("data: %s\n", board);
+        //printf("data: %s\n", board);
 
-        if (strcmp(board, "STOP") == 0)
+        if(strcmp(board, "WIN") == 0)
         {
+            clear_screen();
+            printf("You won! Your cows are happy!\n");
+            printf("\n");
+            printf("   \\|/          (__)  \n");
+            printf("        `\\------(><) \n");
+            printf("          ||    (uu)\n");
+            printf("          ||w--||     \\|/\n");
+            printf("      \\|/\n");
+            break;
 
+
+        }
+        else if (strcmp(board, "LOSE") == 0) 
+        {
+            clear_screen();
+            printf("You lost! Your cows are sad.\n");
+            printf("\n");
+            printf("   \\|/          (__)  \n");
+            printf("        `\\------(XX) \n");
+            printf("          ||    (__)\n");
+            printf("          ||w--||     \\|/\n");
+            printf("      \\|/\n");
+            break;
+        }
+        else if (strcmp(board, "STOP") == 0)
+        {
+            clear_screen();
+            printf("It is the opponent's turn\n");
+            printf("\n");
+            printf("   \\|/          (__)  z z\n");
+            printf("        `\\------(uu) z\n");
+            printf("          ||    (__)\n");
+            printf("          ||w--||     \\|/\n");
+            printf("      \\|/\n");
+            printf("\nPlease wait...\n");
         }
         else
         {
+            clear_screen();
             print_board(board);
-            printf("Enter move: ");
-            fgets(userinput, sizeof(userinput), stdin);
-            *(strchr(userinput, '\n')) = '\0';
-            printf("userinput: .%s.\n", userinput);
+            while(1){
+                printf("Enter move: ");
+                fgets(userinput, sizeof(userinput), stdin);
+                *(strchr(userinput, '\n')) = '\0';
+                if(valid_input(userinput)) break;
+                else printf("Not a valid input\n");
+            }
+            //printf("userinput: .%s.\n", userinput);
             int m = write(server, &userinput, sizeof(userinput));
             error_message(m);
             int f = fflush(stdin);
