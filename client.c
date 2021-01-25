@@ -21,6 +21,25 @@
  *                                             |_|
  */
 
+static void sighandler(int signo)
+{
+    if (signo == SIGINT)
+    {
+        printf("\nQuitting...\n");
+        exit(0);   
+    }
+    if (signo = SIGUSR1)
+    {
+        printf("\nServer Exited\nQuitting...");
+        exit(0);   
+    }
+    if (signo = SIGUSR2)
+    {
+        printf("\nOpponent Exited\nQuitting...");
+        exit(0);   
+    }
+}
+
 void print_board(char *flatboard, int board)
 {
     if (!board)
@@ -95,6 +114,9 @@ void clear_screen()
 
 int main()
 {
+    signal(SIGUSR1, sighandler);
+    signal(SIGUSR2, sighandler);
+    signal(SIGKILL, sighandler);
     printf("\n       _____      _   _   _           _     _        \n      / ____|    | | | | | |         | |   (_)       \n     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   \n     | |    / _` | __| __| |/ _ \\/ __| '_ \\| | '_ \\  \n     | |___| (_| | |_| |_| |  __/\\__ \\ | | | | |_) | \n      \\_____\\__,_|\\__|\\__|_|\\___||___/_| |_|_| .__/  \n                                             | |     \n                                             |_|     \n");
     // creates private pipe
     char buffer[100];

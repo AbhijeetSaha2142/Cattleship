@@ -9,6 +9,27 @@
 #include <ctype.h>
 #include <signal.h>
 
+int pida;
+int pidb; 
+
+static void sighandler(int signo)
+{
+    if (signo == SIGINT)
+    {
+        kill(pida, SIGUSR1);
+        kill(pidb, SIGUSR1);
+        printf("\nQuitting...\n");
+        exit(0);   
+    }
+    if (signo = SIGPIPE)
+    {
+        kill(pida, SIGUSR2);
+        kill(pidb, SIGUSR2);
+        printf("\nPlayer Exited\nQuitting...");
+        exit(0);   
+    }
+}
+
 int bounded(int x, int y)
 {
     return ((x < 10) && (x >= 0)) && ((y < 10) && (y >= 0));
@@ -265,6 +286,8 @@ int strike(char *flatboard, char *move)
 
 int main()
 {
+    signal(SIGINT, sighandler);
+    signal(SIGPIPE, sighandler);
     srand(time(NULL));
     printf("\n       _____      _   _   _           _     _        \n      / ____|    | | | | | |         | |   (_)       \n     | |     __ _| |_| |_| | ___  ___| |__  _ _ __   \n     | |    / _` | __| __| |/ _ \\/ __| '_ \\| | '_ \\  \n     | |___| (_| | |_| |_| |  __/\\__ \\ | | | | |_) | \n      \\_____\\__,_|\\__|\\__|_|\\___||___/_| |_|_| .__/  \n                                             | |     \n                                             |_|     server\n");
 
@@ -273,6 +296,7 @@ int main()
     int server1 = open("hub1", O_RDONLY);
     error_message(server1);
     char pid1[100];
+    pida = atoi(pid1);
 
     int r1 = read(server1, pid1, sizeof(pid1));
     error_message(r1);
@@ -297,6 +321,7 @@ int main()
     int server2 = open("hub2", O_RDONLY);
     error_message(server2);
     char pid2[100];
+    pidb = atoi(pid2);
 
     int r2 = read(server2, pid2, sizeof(pid2));
     error_message(r2);
