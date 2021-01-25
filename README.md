@@ -16,13 +16,23 @@ To initialize the server and client, the handshake method is used (which works w
 The first player client receives their array (their board), and displays it. Another board displays their hits and misses. Then, it will prompt the user to make a move. The user types in an alphanumeric number (e.g. A1) and that number is sent to the server through a pipe. The server applies that move to the second player’s board, and if player 1 makes a hit, then the player makes another move. Otherwise, it sends the arrays to the player 2 client and asks player 2 to make a move. When a player is making a move, the other player’s terminal is cleared using a fork and exec clear. 
 
 The game will stop either when one player wins, or when one player does ctrl-c. Using ctrl-c will exit the program and (before exiting) send a signal to the server, which then sends a message to the other player that the player has quit. Then the other player’s client exits. 
-
-There are three parts to this project: client, server, and algorithm. Abhijeet will work on the algorithm that creates the boards and determines game logic. Steven will work on the server component. Kristoff will work on the client component. 
-### Timeline
-1/13 - Client is able to display sample boards.
-
-1/15 - Algorithm developed and working, able to create randomized boards.
-
-1/19 - 2 Clients and Server are able to handshake and execute game logic.
-
-1/21 - Finished project, with most bugs fixed.
+### Required Libraries
+- stdio.h
+- stdlib.h
+- time.h
+- fcntl.h
+- unistd.h
+- errno.h
+- string.h
+- sys/stat.h
+- sys/wait.h
+- ctype.h
+- signal.h
+### Instructions
+- Clone repo 
+- Run ```make``` in the terminal to create server and client programs
+- Run ./server in one terminal, and ./client in 2 other terminals (one server terminal, two client terminals). The clients should handshake to the server.
+- The game should start, with one client (Player 1) making a move and the other inactive. 
+- Player 1 (or 2 if it's their turn) should make a move in the form of [A-J][0-9], ex. "A1"
+- If Player 1 hits a cow, Player 1 goes again. Otherwise, Player 2 makes a move. 
+- This continues until one Player wins (all cows are located) or quits. (Quitting can happen one of two ways: The server exits, which sends signals and causes the clients to print a message then quit, or one of the clients exits, which causes the server to send a signal to the other client that the opponent has exited, then making both opponent and server quit). 
