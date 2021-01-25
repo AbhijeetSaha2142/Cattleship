@@ -26,3 +26,6 @@
   + added second board on client
   + implemented move tracking/history
   + valid move verification improved
+2021-1-24 Steven Lee
+  + improved signal handling (ctrl + c, opp has left, server disconnected)
+
