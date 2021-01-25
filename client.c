@@ -26,17 +26,17 @@ static void sighandler(int signo)
     if (signo == SIGINT)
     {
         printf("\nQuitting...\n");
-        exit(0);   
+        exit(0);
     }
     if (signo == SIGUSR1)
     {
         printf("\nServer Exited\nQuitting...");
-        exit(0);   
+        exit(0);
     }
     if (signo == SIGUSR2)
     {
         printf("\nOpponent Exited\nQuitting...");
-        exit(0);   
+        exit(0);
     }
 }
 
@@ -76,6 +76,14 @@ void strike_indicator(char *flatboard, char *move, int hit)
     }
     flatboard[10 * num + alpha] = 'O';
     return;
+}
+
+int repeat_move(char *flatboard, char *move)
+{
+    int alpha = (int) (move[0] - 'A');
+    int num = (int) (move[1] - '0');
+    if(flatboard[10 * num + alpha] == 'X' || flatboard[10 * num + alpha] == 'O') return 1;
+    return 0;
 }
 
 int valid_input(char *userinput)
@@ -161,7 +169,10 @@ int main()
     char userinput[10];
     char board[150];
 
-    char opp_board[] = "____________________________________________________________________________________________________";
+    char opp_board[101];
+    int i;
+    for(i = 0; i < 100; i++) opp_board[i] = '_';
+
     int hit;
 
     while(1)
@@ -219,7 +230,11 @@ int main()
                 printf("Enter move: ");
                 fgets(userinput, sizeof(userinput), stdin);
                 *(strchr(userinput, '\n')) = '\0';
-                if(valid_input(userinput)) break;
+                if(valid_input(userinput))
+                {
+                    if (repeat_move(opp_board, userinput)) printf("You've checked %c%c already\n", userinput[0], userinput[1]);
+                    else break;
+                }
                 else printf("Not a valid input\n");
             }
             //printf("userinput: .%s.\n", userinput);

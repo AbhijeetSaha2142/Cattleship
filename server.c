@@ -10,7 +10,7 @@
 #include <signal.h>
 
 int pida;
-int pidb; 
+int pidb;
 
 int error_message(int a)
 {
@@ -29,7 +29,7 @@ static void sighandler(int signo)
         int b = kill(pidb, SIGUSR1);
         error_message(b);
         printf("\nQuitting...\n");
-        exit(0);   
+        exit(0);
     }
     if (signo == SIGPIPE)
     {
@@ -38,7 +38,7 @@ static void sighandler(int signo)
         int d = kill(pidb, SIGUSR2);
         error_message(d);
         printf("\nPlayer Exited\nQuitting...\n");
-        exit(0);   
+        exit(0);
     }
 }
 
@@ -363,7 +363,7 @@ int main()
     {
         if (turn == 0)
         {
-            char move1[10];
+            char move1[50];
             int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
             error_message(p2);
 
@@ -383,7 +383,7 @@ int main()
             int e = write(client1, &hit, sizeof(hit));
             //error_message(e);
 
-            printf("Player 1 moved: '%s', turn: %d, m1: %d\n", move1, turn, m1);
+            printf("Player 1 moved: '%c%c', turn: %d, m1: %d\n", move1[0], move1[1], turn, m1);
 
             if(check(flatboard2) == 0)
             {
@@ -398,7 +398,7 @@ int main()
         }
         else if (turn == 1)
         {
-            char move2[10];
+            char move2[50];
             int p1 = write(client1, stop, sizeof(stop)); // STOP Player 1
             error_message(p1);
 
@@ -418,7 +418,7 @@ int main()
             int e = write(client2, &hit, sizeof(hit));
             //error_message(e);
 
-            printf("Player 2 moved: '%s', turn: %d, m2: %d\n", move2, turn, m2);
+            printf("Player 2 moved: '%c%c', turn: %d, m2: %d\n", move2[0], move2[1], turn, m2);
 
             if(check(flatboard1) == 0)
             {

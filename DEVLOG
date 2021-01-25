@@ -28,4 +28,6 @@
   + valid move verification improved
 2021-1-24 Steven Lee
   + improved signal handling (ctrl + c, opp has left, server disconnected)
-
+2021-1-25 Kristoff Misquitta
+  + repeat moves are discarded
+  + smarter move detection from input string
