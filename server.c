@@ -12,20 +12,32 @@
 int pida;
 int pidb; 
 
+int error_message(int a)
+{
+    if (a == -1) {
+        printf("errno: %d\terror: %s\n", errno, strerror(errno));
+        return -1;
+    }
+}
+
 static void sighandler(int signo)
 {
     if (signo == SIGINT)
     {
-        kill(pida, SIGUSR1);
-        kill(pidb, SIGUSR1);
+        int a = kill(pida, SIGUSR1);
+        error_message(a);
+        int b = kill(pidb, SIGUSR1);
+        error_message(b);
         printf("\nQuitting...\n");
         exit(0);   
     }
-    if (signo = SIGPIPE)
+    if (signo == SIGPIPE)
     {
-        kill(pida, SIGUSR2);
-        kill(pidb, SIGUSR2);
-        printf("\nPlayer Exited\nQuitting...");
+        int c = kill(pida, SIGUSR2);
+        error_message(c);
+        int d = kill(pidb, SIGUSR2);
+        error_message(d);
+        printf("\nPlayer Exited\nQuitting...\n");
         exit(0);   
     }
 }
@@ -253,14 +265,6 @@ void print_board(char **board)
     }
 }
 
-int error_message(int a)
-{
-    if (a == -1) {
-        printf("errno: %d\terror: %s\n", errno, strerror(errno));
-        return -1;
-    }
-}
-
 char *flatten(char **board)
 {
     char *out = malloc(101 * sizeof(char));
@@ -296,10 +300,10 @@ int main()
     int server1 = open("hub1", O_RDONLY);
     error_message(server1);
     char pid1[100];
-    pida = atoi(pid1);
 
     int r1 = read(server1, pid1, sizeof(pid1));
     error_message(r1);
+    pida = atoi(pid1);
     printf("Message received from %s (Player 1).\n Sending message to Player 1...\n", pid1);
 
     int client1 = open(pid1, O_WRONLY);
@@ -321,10 +325,10 @@ int main()
     int server2 = open("hub2", O_RDONLY);
     error_message(server2);
     char pid2[100];
-    pidb = atoi(pid2);
 
     int r2 = read(server2, pid2, sizeof(pid2));
     error_message(r2);
+    pidb = atoi(pid2);
     printf("Message received from %s (Player 2).\n Sending message to Player 2...\n", pid2);
 
     int client2 = open(pid2, O_WRONLY);

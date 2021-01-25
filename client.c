@@ -28,12 +28,12 @@ static void sighandler(int signo)
         printf("\nQuitting...\n");
         exit(0);   
     }
-    if (signo = SIGUSR1)
+    if (signo == SIGUSR1)
     {
         printf("\nServer Exited\nQuitting...");
         exit(0);   
     }
-    if (signo = SIGUSR2)
+    if (signo == SIGUSR2)
     {
         printf("\nOpponent Exited\nQuitting...");
         exit(0);   
