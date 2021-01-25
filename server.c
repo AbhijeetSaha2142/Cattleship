@@ -326,6 +326,7 @@ int main()
     char *flatboard2 = flatten(board2);
 
     int turn = 0; // 0 is Player 1, 1 is Player 2
+    int hit;
     char stop[] = "STOP";
     char win[] = "WIN";
     char lose[] = "LOSE";
@@ -333,7 +334,7 @@ int main()
     {
         if (turn == 0)
         {
-            char move1[10];  
+            char move1[10];
             int p2 = write(client2, stop, sizeof(stop)); // STOP Player 2
             error_message(p2);
 
@@ -343,21 +344,27 @@ int main()
             int m1 = read(server1, move1, sizeof(move1));
             error_message(m1);
 
-            if(!strike(flatboard2, move1))
+            hit = strike(flatboard2, move1);
+
+            if(!hit)
             {
                 turn = 1;
             }
 
+            int e = write(client1, &hit, sizeof(hit));
+            //error_message(e);
+
             printf("Player 1 moved: '%s', turn: %d, m1: %d\n", move1, turn, m1);
+
             if(check(flatboard2) == 0)
             {
                 int p2l = write(client2, lose, sizeof(lose)); // LOSE Player 2
                 error_message(p2);
 
                 int p1w = write(client1, win, sizeof(win)); // WIN Player 1
-                error_message(p1);  
+                error_message(p1);
                 printf("Player 1 wins!\n");
-                break; 
+                break;
             }
         }
         else if (turn == 1)
@@ -371,22 +378,28 @@ int main()
 
             int m2 = read(server2, move2, sizeof(move2));
             error_message(m2);
-            
-            if(!strike(flatboard1, move2))
+
+            hit = strike(flatboard1, move2);
+
+            if(!hit)
             {
                 turn = 0;
             }
 
+            int e = write(client2, &hit, sizeof(hit));
+            //error_message(e);
+
             printf("Player 2 moved: '%s', turn: %d, m2: %d\n", move2, turn, m2);
+
             if(check(flatboard1) == 0)
             {
                 int p1l = write(client1, lose, sizeof(lose)); // LOSE Player 2
                 error_message(p1);
 
                 int p2w = write(client2, win, sizeof(win)); // WIN Player 1
-                error_message(p2);  
+                error_message(p2);
                 printf("Player 2 wins!\n");
-                break; 
+                break;
             }
         }
 

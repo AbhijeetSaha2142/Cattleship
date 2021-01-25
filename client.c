@@ -21,10 +21,19 @@
  *                                             |_|
  */
 
-void print_board(char *flatboard)
+void print_board(char *flatboard, int board)
 {
+    if (!board)
+    {
+        printf("    ~~~~~YOUR FARM~~~~~\n");
+    }
+    else if (board)
+    {
+        printf("    ~~~~~~HISTORY~~~~~~\n");
+        printf("       X=hit  O=miss   \n");
+    }
+
     printf("    A B C D E F G H I J\n");
-    //printf("    _ _ _ _ _ _ _ _ _ _\n");
     for (int i = 0; i < 10; ++i)
     {
         printf("%d  |", i);
@@ -34,11 +43,25 @@ void print_board(char *flatboard)
         }
         printf("\n");
     }
+    printf("\n");
+}
+
+void strike_indicator(char *flatboard, char *move, int hit)
+{
+    int alpha = (int) (move[0] - 'A');
+    int num = (int) (move[1] - '0');
+    if(hit)
+    {
+        flatboard[10 * num + alpha] = 'X';
+        return;
+    }
+    flatboard[10 * num + alpha] = 'O';
+    return;
 }
 
 int valid_input(char *userinput)
 {
-    if(userinput[0] <= 'Z' && userinput[0] >= 'A' && userinput[1] >= '0' && userinput[1] <= '9') return 1; 
+    if(userinput[0] <= 'J' && userinput[0] >= 'A' && userinput[1] >= '0' && userinput[1] <= '9') return 1;
     return 0;
 }
 
@@ -58,7 +81,7 @@ void clear_screen()
     {
         int status;
         int pid= wait(&status);
-        
+
     }
     else
     {
@@ -69,7 +92,6 @@ void clear_screen()
     }
     printf("\n");
 }
-
 
 int main()
 {
@@ -116,6 +138,10 @@ int main()
     // server (output), client (input)
     char userinput[10];
     char board[150];
+
+    char opp_board[] = "____________________________________________________________________________________________________";
+    int hit;
+
     while(1)
     {
 
@@ -137,7 +163,7 @@ int main()
 
 
         }
-        else if (strcmp(board, "LOSE") == 0) 
+        else if (strcmp(board, "LOSE") == 0)
         {
             clear_screen();
             printf("You lost! Your cows are sad.\n");
@@ -164,7 +190,9 @@ int main()
         else
         {
             clear_screen();
-            print_board(board);
+            print_board(board, 0);
+            print_board(opp_board, 1);
+
             while(1){
                 printf("Enter move: ");
                 fgets(userinput, sizeof(userinput), stdin);
@@ -177,7 +205,11 @@ int main()
             error_message(m);
             int f = fflush(stdin);
             error_message(f);
-            
+
+            int e = read(client, &hit, sizeof(hit));
+            error_message(e);
+
+            strike_indicator(opp_board, userinput, hit);
         }
     }
 }
